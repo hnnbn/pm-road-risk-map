@@ -1,20 +1,153 @@
 # PM Road Risk Map
 
-멀티모달 융합 기반 PM(Personal Mobility) 주행 위험도 예측 및 안전 지도 시각화 프로젝트입니다. 도로 노면 이미지에서 포트홀·맨홀·크랙을 감지하고, GPS 기반 DEM 경사도 정보를 결합해 서울 도로 이미지별 위험 등급을 산출했습니다.
+> Computer Vision and geospatial data pipeline for predicting personal mobility road-risk levels from road-surface images and DEM-based slope information.
 
-## Project Summary
+개인형 이동장치(PM)는 작은 바퀴와 낮은 주행 안정성 때문에 포트홀, 맨홀, 균열, 급경사에 민감합니다. 이 프로젝트는 도로 노면 이미지에서 손상 요소를 감지하고, GPS 기반 경사도 정보를 결합해 서울 도로 이미지별 PM 주행 위험도를 예측한 팀 프로젝트입니다.
 
-개인형 이동장치(PM)는 작은 바퀴와 낮은 안정성 때문에 포트홀, 균열, 급경사에 민감합니다. 이 프로젝트는 이미지 기반 노면 손상과 지형 기반 경사도를 함께 사용해 PM 주행 위험도를 예측하고 지도에 시각화하는 파이프라인을 구성합니다.
+## Preview
 
-전체 흐름은 다음과 같습니다.
+| Crack Segmentation | Manhole Detection |
+|---|---|
+| ![Crack segmentation result](docs/images/crack_segmentation_overlay.png) | ![Manhole detection result](docs/images/manhole_detection.png) |
 
-1. AI-Hub 도로 이미지 annotation을 YOLO 형식으로 변환
-2. YOLOv8로 포트홀·맨홀 객체 탐지
-3. U-Net으로 크랙 영역 segmentation
-4. 서울 도로 이미지의 GPS와 DEM을 결합해 경사도 추출
-5. 손상 등급, 크랙 등급, 경사 등급으로 rule-based risk label 생성
-6. XGBoost로 최종 위험 등급 예측
-7. Folium 기반 PM 위험 지도 생성
+| Pothole Detection | Risk Map Visualization |
+|---|---|
+| ![Pothole detection result](docs/images/pothole_detection.png) | ![Risk map visualization](docs/images/risk_map.png) |
+
+## Highlights
+
+- Built an end-to-end risk prediction pipeline from image detection to map visualization.
+- Detected potholes and manholes using YOLOv8 object detection.
+- Improved pothole detection by identifying label mismatch issues and rebuilding the training dataset.
+- Switched crack detection from YOLOv8 segmentation to U-Net because crack labels were thin polyline-style structures.
+- Combined road damage, crack severity, and DEM-based slope into a rule-based risk label.
+- Trained an XGBoost classifier and visualized PM risk levels on a Folium map.
+
+## My Contribution
+
+> 팀 프로젝트인 경우, 아래 항목은 본인이 실제로 담당한 내용에 맞게 수정하는 것을 권장합니다.
+
+- Preprocessed AI-Hub road-surface annotations into YOLO training format.
+- Trained and evaluated YOLOv8 models for pothole and manhole detection.
+- Analyzed poor pothole performance and found label-image mismatch issues in the initial dataset.
+- Built the U-Net crack segmentation workflow using binary masks, Dice Loss, and Focal Loss.
+- Designed image-level crack and damage severity metrics from model predictions.
+- Integrated damage, crack, and slope features into a final PM risk score.
+- Organized the project into a GitHub portfolio repository with notebooks and reusable Python modules.
+
+## Problem
+
+PM riders are more vulnerable to small road-surface defects than cars because PM devices have smaller wheels and lower balance stability. A single pothole or crack can become more dangerous when it appears on a steep road section. Therefore, road risk should be estimated from both visual road damage and spatial slope information.
+
+This project answers the following question:
+
+> Can we estimate PM riding risk by combining road-surface damage detection, crack segmentation, and DEM-based slope features?
+
+## Pipeline
+
+```text
+AI-Hub road images and labels
+        |
+        v
+YOLOv8 pothole/manhole detection
+        |
+        v
+U-Net crack segmentation
+        |
+        v
+Image-level damage and crack metrics
+        |
+        v
+GPS + DEM slope extraction
+        |
+        v
+Rule-based risk label generation
+        |
+        v
+XGBoost risk classification
+        |
+        v
+Folium PM risk map
+```
+
+## Dataset
+
+Raw datasets are not included in this repository because of size and license constraints.
+
+| Data | Purpose |
+|---|---|
+| AI-Hub road obstacle / surface images | Train pothole, manhole, and crack models |
+| High-resolution road-surface images with GPS | Apply models to Seoul road images |
+| DEM elevation data | Extract slope information from GPS coordinates |
+
+## Methods
+
+### 1. Pothole and Manhole Detection
+
+- Model: YOLOv8 detection
+- Target classes: pothole and manhole
+- Original annotation: bounding boxes
+- Output: image-level object counts and area-based damage metrics
+
+The initial pothole model showed poor performance because many labels were not correctly aligned with actual pothole locations. After inspecting label overlays, the dataset was rebuilt using additional verified pothole samples.
+
+### 2. Crack Segmentation
+
+- Initial attempt: YOLOv8 segmentation
+- Final model: U-Net with ResNet encoder
+- Loss: Dice Loss + Focal Loss
+- Output: binary crack mask
+
+Cracks are thin, long, and often represented as polyline labels. Since YOLO segmentation expects object-like polygon regions, U-Net was more suitable for pixel-level crack segmentation.
+
+### 3. Risk Score Modeling
+
+The final risk score combines road-surface damage, crack severity, and slope risk.
+
+```python
+final_risk_score = (
+    0.45 * damage_grade
+    + 0.35 * crack_grade
+    + 0.20 * slope_grade
+    + 0.4 * I(damage_grade >= 2 and slope_grade >= 2)
+    + 0.3 * I(crack_grade >= 2 and slope_grade >= 2)
+    + 0.3 * I(damage_grade >= 2 and crack_grade >= 2)
+)
+```
+
+| Grade | Score Range | Meaning |
+|---:|---|---|
+| 0 | <= 0.75 | Safe |
+| 1 | 0.75 - 1.5 | Caution |
+| 2 | 1.5 - 2.25 | Dangerous |
+| 3 | > 2.25 | Very dangerous |
+
+## Results
+
+| Task | Model | Metric | Result |
+|---|---|---:|---:|
+| Pothole and manhole detection | YOLOv8 | Overall mAP50 | 0.703 |
+| Pothole detection | YOLOv8 | Pothole mAP50 | 0.476 |
+| Manhole detection | YOLOv8 | Manhole mAP50 | 0.929 |
+| Crack segmentation | U-Net | Dice / IoU | Add result |
+| Risk classification | XGBoost | Accuracy / F1 | Add result |
+
+### Model Improvement
+
+| Experiment | Overall mAP50 | Pothole mAP50 | Manhole mAP50 |
+|---|---:|---:|---:|
+| Initial dataset | 0.484 | 0.0939 | 0.875 |
+| Rebuilt dataset | 0.703 | 0.476 | 0.929 |
+
+## Example Outputs
+
+| Crack Segmentation | Manhole Detection |
+|---|---|
+| ![Crack segmentation](docs/images/crack_segmentation_overlay.png) | ![Manhole detection](docs/images/manhole_detection.png) |
+
+| Pothole Detection | PM Risk Map |
+|---|---|
+| ![Pothole detection](docs/images/pothole_detection.png) | ![PM risk map](docs/images/risk_map.png) |
 
 ## Repository Structure
 
@@ -26,6 +159,7 @@ pm-road-risk-map/
     README.md
   docs/
     final_presentation.pdf
+    images/
   notebooks/
     01_pothole_manhole_yolov8.ipynb
     02_crack_unet_segmentation.ipynb
@@ -41,60 +175,41 @@ pm-road-risk-map/
   requirements.txt
 ```
 
-## Methods
+## How to Run
 
-### Pothole and Manhole Detection
-
-- Model: YOLOv8n / YOLOv8s detection
-- Labels: `category_id=8` pothole, `category_id=10` manhole
-- Improvement: 수도권 데이터에서 포트홀 label mismatch를 확인한 뒤 수도권 외 포트홀 데이터를 재수집·검수했습니다.
-- Result from presentation: pothole mAP50 improved from `0.0939` to `0.476`, and overall mAP50 improved from `0.484` to `0.703`.
-
-### Crack Segmentation
-
-- Initial attempt: YOLOv8 segmentation
-- Final model: U-Net with ResNet encoder
-- Loss: Dice Loss + Focal Loss
-- Reason for U-Net: 크랙은 얇고 긴 polyline 구조라 객체 polygon 방식보다 pixel-level binary mask 학습이 적합했습니다.
-
-### Rule-Based Risk Label
-
-The final risk score follows the presentation logic:
-
-```python
-final_risk_score = (
-    0.45 * damage_grade
-    + 0.35 * crack_grade
-    + 0.20 * slope_grade
-    + 0.4 * I(damage_grade >= 2 and slope_grade >= 2)
-    + 0.3 * I(crack_grade >= 2 and slope_grade >= 2)
-    + 0.3 * I(damage_grade >= 2 and crack_grade >= 2)
-)
-```
-
-Risk grade:
-
-| Grade | Score Range | Meaning |
-|---:|---|---|
-| 0 | <= 0.75 | Safe |
-| 1 | 0.75 - 1.5 | Caution |
-| 2 | 1.5 - 2.25 | Danger |
-| 3 | > 2.25 | Very dangerous |
-
-## Quick Start
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-In Colab, open the notebooks in order:
+Run the notebooks in order:
 
 1. `notebooks/01_pothole_manhole_yolov8.ipynb`
 2. `notebooks/02_crack_unet_segmentation.ipynb`
 3. `notebooks/03_risk_score_and_map.ipynb`
 
-Raw AI-Hub images, labels, DEM files, trained weights, and generated outputs are intentionally excluded from Git. Put local files under `data/` or mount Google Drive paths as shown in the notebooks.
+The original workflow was developed in Google Colab with Google Drive-mounted datasets.
 
-## Portfolio Notes
+## Tech Stack
 
-This repository is organized for portfolio review rather than direct redistribution of the original dataset. The notebooks preserve the Colab workflow, while reusable logic is collected under `src/road_risk` so reviewers can understand the modeling and scoring pipeline without reading one long notebook.
+- Python
+- PyTorch
+- Ultralytics YOLOv8
+- segmentation-models-pytorch
+- OpenCV
+- scikit-image
+- XGBoost
+- Folium
+- pandas, NumPy, scikit-learn
+
+## Limitations and Future Work
+
+- Raw data and trained weights are not included because of dataset size and license constraints.
+- Risk labels are rule-based, so they should be validated with real accident or road-maintenance data in future work.
+- DEM-based slope is useful, but local road surface conditions may require higher-resolution spatial data.
+- Model robustness can be improved with additional manually verified pothole and crack samples.
+
+## Presentation
+
+The final team presentation is included at `docs/final_presentation.pdf`.
