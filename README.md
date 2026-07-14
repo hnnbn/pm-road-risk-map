@@ -17,7 +17,7 @@ Final output: an interactive Seoul PM risk map with four risk grades: Safe, Caut
 - Improved pothole detection by identifying label mismatch issues and rebuilding the training dataset.
 - Switched crack detection from YOLOv8 segmentation to U-Net because crack labels were thin polyline-style structures.
 - Combined road damage, crack severity, and DEM-based slope into a rule-based risk label.
-- Trained an XGBoost classifier and visualized PM risk levels on a Folium map.
+- Integrated the team’s XGBoost-based risk classifier into the final PM risk-map visualization pipeline.
 
 ## My Contribution
 
@@ -26,7 +26,7 @@ Final output: an interactive Seoul PM risk map with four risk grades: Safe, Caut
 - Analyzed poor pothole performance and found label-image mismatch issues in the initial dataset.
 - Built the U-Net crack segmentation workflow using binary masks, Dice Loss, and Focal Loss.
 - Designed image-level crack and damage severity metrics from model predictions.
-- Integrated damage, crack, and slope features into a final PM risk score.
+- Integrated road damage, crack, and slope features into the final PM risk-scoring pipeline.
 - Organized the project into a GitHub portfolio repository with notebooks and reusable Python modules.
 
 ## Problem
