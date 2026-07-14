@@ -1,0 +1,17 @@
+ultralytics>=8.0.0
+torch
+torchvision
+segmentation-models-pytorch
+albumentations
+opencv-python
+numpy
+pandas
+scikit-image
+scikit-learn
+xgboost
+shap
+matplotlib
+seaborn
+folium
+tqdm
+pyyaml

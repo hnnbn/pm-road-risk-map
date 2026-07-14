@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Data and model artifacts
+data/raw/
+data/interim/
+data/processed/
+outputs/*
+!outputs/README.md
+*.pt
+*.pth
+*.onnx
+*.engine
+runs/
+yolo_runs/
+unet_runs/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,7 @@
+path: /content/drive/MyDrive/mpdata/train
+train: train_noneg.txt
+val: val_noneg.txt
+test: test_noneg.txt
+names:
+  0: pothole
+  1: manhole
