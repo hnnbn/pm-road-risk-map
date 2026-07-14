@@ -25,8 +25,6 @@
 
 ## My Contribution
 
-> 팀 프로젝트인 경우, 아래 항목은 본인이 실제로 담당한 내용에 맞게 수정하는 것을 권장합니다.
-
 - Preprocessed AI-Hub road-surface annotations into YOLO training format.
 - Trained and evaluated YOLOv8 models for pothole and manhole detection.
 - Analyzed poor pothole performance and found label-image mismatch issues in the initial dataset.
