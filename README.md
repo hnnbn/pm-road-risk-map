@@ -173,6 +173,33 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
+### Quick Demo with Sample Data
+
+This repository includes a tiny sample dataset under `data/sample/` so the risk-scoring and map-generation part can be tested without downloading the original datasets or model weights.
+
+```bash
+python scripts/run_demo.py
+```
+
+Expected outputs:
+
+```text
+outputs/demo/sample_risk_predictions.csv
+outputs/demo/sample_risk_map.html
+```
+
+If `folium` is installed, the HTML file is generated as an interactive map. If not, the script still creates a lightweight static HTML risk report.
+
+The demo uses precomputed example features that mimic YOLO, U-Net, and DEM outputs:
+
+| File | Meaning |
+|---|---|
+| `data/sample/road_damage_summary.csv` | Pothole/manhole detection summary |
+| `data/sample/crack_metrics.csv` | Crack segmentation metrics |
+| `data/sample/slope_features.csv` | GPS coordinates and slope values |
+
+### Full Colab Workflow
+
 Run the notebooks in order:
 
 1. `notebooks/01_pothole_manhole_yolov8.ipynb`

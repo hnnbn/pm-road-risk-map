@@ -1,0 +1,13 @@
+image,pothole_count,manhole_count,pothole_area_ratio,max_pothole_area_ratio
+seoul_001.jpg,0,0,0.0000,0.0000
+seoul_002.jpg,1,0,0.0025,0.0025
+seoul_003.jpg,0,2,0.0000,0.0000
+seoul_004.jpg,2,1,0.0060,0.0040
+seoul_005.jpg,3,0,0.0110,0.0060
+seoul_006.jpg,0,1,0.0000,0.0000
+seoul_007.jpg,1,1,0.0030,0.0030
+seoul_008.jpg,4,0,0.0180,0.0090
+seoul_009.jpg,0,0,0.0000,0.0000
+seoul_010.jpg,2,2,0.0075,0.0055
+seoul_011.jpg,1,0,0.0015,0.0015
+seoul_012.jpg,5,1,0.0210,0.0100
