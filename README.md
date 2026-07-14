@@ -6,13 +6,9 @@
 
 ## Preview
 
-| Crack Segmentation | Manhole Detection |
-|---|---|
-| ![Crack segmentation result](docs/images/crack_segmentation_overlay.png) | ![Manhole detection result](docs/images/manhole_detection.png) |
+![PM risk map](docs/images/risk_map.png)
 
-| Pothole Detection | Risk Map Visualization |
-|---|---|
-| ![Pothole detection result](docs/images/pothole_detection.png) | ![Risk map visualization](docs/images/risk_map.png) |
+Final output: an interactive Seoul PM risk map with four risk grades: Safe, Caution, Dangerous, and Very dangerous.
 
 ## Highlights
 
@@ -139,13 +135,9 @@ final_risk_score = (
 
 ## Example Outputs
 
-| Crack Segmentation | Manhole Detection |
-|---|---|
-| ![Crack segmentation](docs/images/crack_segmentation_overlay.png) | ![Manhole detection](docs/images/manhole_detection.png) |
-
-| Pothole Detection | PM Risk Map |
-|---|---|
-| ![Pothole detection](docs/images/pothole_detection.png) | ![PM risk map](docs/images/risk_map.png) |
+| Crack Segmentation | Manhole Detection | Pothole Detection |
+|---|---|---|
+| ![Crack segmentation](docs/images/crack_segmentation_overlay.png) | ![Manhole detection](docs/images/manhole_detection.png) | ![Pothole detection](docs/images/pothole_detection.png) |
 
 ## Repository Structure
 
