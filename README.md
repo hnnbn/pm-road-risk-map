@@ -123,8 +123,17 @@ final_risk_score = (
 | Pothole and manhole detection | YOLOv8 | Overall mAP50 | 0.703 |
 | Pothole detection | YOLOv8 | Pothole mAP50 | 0.476 |
 | Manhole detection | YOLOv8 | Manhole mAP50 | 0.929 |
-| Crack segmentation | U-Net | Dice / IoU | Add result |
-| Risk classification | XGBoost | Accuracy / F1 | Add result |
+| Crack segmentation | U-Net | Dice / IoU | 0.6549 / 0.5096 |
+| Risk classification | XGBoost | Accuracy / F1 | 0.9174 / 0.9163 |
+| Risk classification | XGBoost | 5-Fold CV | 0.9375 ± 0.0189 |
+
+Additional crack segmentation test result:
+
+| Metric | Value |
+|---|---:|
+| Test Loss | 0.4549 |
+| Test Dice | 0.6549 |
+| Test IoU | 0.5096 |
 
 ### Model Improvement
 
@@ -132,6 +141,13 @@ final_risk_score = (
 |---|---:|---:|---:|
 | Initial dataset | 0.484 | 0.0939 | 0.875 |
 | Rebuilt dataset | 0.703 | 0.476 | 0.929 |
+
+## Key Learnings
+
+- Label quality had a larger impact on pothole detection than simply changing the model architecture.
+- Thin crack structures were better represented as pixel-level masks than object-like segmentation polygons.
+- Combining road-surface damage with DEM-based slope made the risk score more relevant to PM riding conditions.
+- Rule-based labels were useful for prototyping, but real accident or road-maintenance records would be needed for deployment-level validation.
 
 ## Example Outputs
 
